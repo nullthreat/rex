@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
 	s.platform = "ruby"
 	s.require_paths = ["lib"]
 	s.required_rubygems_version = ">= 0"
-	s.author = ["Metasploit Development Team", "Jacob Hammack"]
+	s.authors = ["Metasploit Development Team", "Jacob Hammack"]
 	s.email = ["hdm@metasploit.com", "jacob.hammack@hammackj.com"]
 	s.extra_rdoc_files = ["README"]
 	s.summary = %q{Ruby Exploitation library}
