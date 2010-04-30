@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
-	s.name = %q{rex}
-	s.version = "0.0.3"
+	s.name = %q{librex}
+	s.version = "0.0.1"
 	s.has_rdoc = false
 	s.required_ruby_version = ">= 1.8.7"
 	s.platform = "ruby"
