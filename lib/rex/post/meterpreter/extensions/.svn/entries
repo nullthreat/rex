@@ -1,43 +1,0 @@
-10
-
-dir
-9625
-http://metasploit.com/svn/framework3/trunk/lib/rex/post/meterpreter/extensions
-http://metasploit.com/svn
-
-
-
-2010-06-01T16:45:34.727200Z
-9385
-hdm
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-4d416f70-5f16-0410-b530-b9f4589650da
-
-priv
-dir
-
-espia
-dir
-
-stdapi
-dir
-
-incognito
-dir
-
-sniffer
-dir
-
