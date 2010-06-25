@@ -1,6 +1,6 @@
 ##
-# $Id: directory.rb 8457 2010-02-11 18:36:38Z jduck $
-# Version: $Revision: 8457 $
+# $Id: directory.rb 9287 2010-05-12 05:33:35Z jduck $
+# Version: $Revision: 9287 $
 ##
 
 ##
@@ -51,7 +51,6 @@ class Directory < DirEntry
 		child.sid = @num_entries
 		@num_entries += 1
 
-
 		# link item to siblings and/or parent
 		if (parent._sidChild == DIR_NOSTREAM)
 			parent._sidChild = child.sid
@@ -72,7 +71,9 @@ class Directory < DirEntry
 					break
 				end
 			}
-			raise RuntimeError, 'Unable to find a sibling to link to in the directory'
+			if (not sib)
+				raise RuntimeError, 'Unable to find a sibling to link to in the directory'
+			end
 		end
 		parent << child
 	end

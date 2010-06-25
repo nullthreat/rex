@@ -1,0 +1,65 @@
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/9622/framework3/trunk/lib/rex/proto
+END
+tftp.rb
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/9333/framework3/trunk/lib/rex/proto/tftp.rb
+END
+http.rb
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/5773/framework3/trunk/lib/rex/proto/http.rb
+END
+dcerpc.rb
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/5773/framework3/trunk/lib/rex/proto/dcerpc.rb
+END
+smb.rb
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/5773/framework3/trunk/lib/rex/proto/smb.rb
+END
+drda.rb.ts.rb
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/!svn/ver/8310/framework3/trunk/lib/rex/proto/drda.rb.ts.rb
+END
+http.rb.ts.rb
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/!svn/ver/5773/framework3/trunk/lib/rex/proto/http.rb.ts.rb
+END
+dcerpc.rb.ts.rb
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/5773/framework3/trunk/lib/rex/proto/dcerpc.rb.ts.rb
+END
+smb.rb.ts.rb
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/5773/framework3/trunk/lib/rex/proto/smb.rb.ts.rb
+END
+sunrpc.rb
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/7961/framework3/trunk/lib/rex/proto/sunrpc.rb
+END
+drda.rb
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/8223/framework3/trunk/lib/rex/proto/drda.rb
+END

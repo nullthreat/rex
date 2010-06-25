@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-# $Id: pe.rb 7730 2009-12-07 12:56:54Z sf $
+# $Id: pe.rb 9272 2010-05-10 16:18:19Z jduck $
 
 require 'rex/image_source'
 require 'rex/peparsey/exceptions'
@@ -143,7 +143,7 @@ class Pe < PeBase
 		self.hdr.config        = self._config_header
 		self.hdr.tls           = self._tls_header
 		self.hdr.exceptions    = self._exception_header
-		
+
 		# We load the exception directory last as it relies on hdr.file to be created above.
 		self._exception_header = _load_exception_directory()
 	end
@@ -184,5 +184,23 @@ class Pe < PeBase
 		(ptr_32?) ? ("0x%.8x" % va) : ("0x%.16x" % va)
 	end
 
-end end end
+	#
+	# Converts a file offset into a virtual address
+	#
+	def file_offset_to_va(offset)
+		image_base + file_offset_to_rva(offset)
+	end
 
+	#
+	# Read raw bytes from the specified offset in the underlying file
+	#
+	# NOTE: You should pass raw file offsets into this, not offsets from
+	# the beginning of the section. If you need to read from within a 
+	# section, add section.file_offset prior to passing the offset in.
+	#
+	def read(offset, len)
+		_isource.read(offset, len)
+	end
+
+
+end end end
