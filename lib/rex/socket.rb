@@ -201,6 +201,31 @@ module Socket
 		addr_ntoi(resolv_nbo(host))
 	end
 
+	# 
+	# Converts an ASCII IP address to a CIDR mask. Returns
+	# nil if it's not convertable.
+	# 
+	def self.addr_atoc(mask)
+		mask_i = resolv_nbo_i(mask)
+		cidr = nil
+		0.upto(32) do |i|
+			if ((1 << i)-1) << (32-i) == mask_i
+				cidr = i
+				break
+			end
+		end
+		return cidr
+	end
+
+	#
+	# Resolves a CIDR bitmask into a dotted-quad. Returns
+	# nil if it's not convertable.
+	#
+	def self.addr_ctoa(cidr)
+		return nil unless (0..32) === cidr.to_i
+		addr_itoa(((1 << cidr)-1) << 32-cidr)
+	end
+
 	#
 	# Resolves a host to a dotted address.
 	#

@@ -72,24 +72,22 @@ module Stream
 	# true if data is available for reading, otherwise false is returned.
 	#
 	def has_read_data?(timeout = nil)
+
+		# Allow a timeout of "0" that waits almost indefinitely for input, this
+		# mimics the behavior of Rex::ThreadSafe.select() and fixes some corner
+		# cases of unintentional no-wait timeouts.
+		timeout = 3600 if (timeout and timeout == 0)
+
 		begin
-			if RUBY_VERSION =~ /^1\.9\./ and RUBY_PLATFORM !~ /cygwin|mingw32/
-				if ((rv = ::IO.select([ fd ], nil, nil, timeout)) and
-				    (rv[0]) and
-				    (rv[0][0] == fd))
-					true
-				else
-					false
-				end
+			if ((rv = ::IO.select([ fd ], nil, nil, timeout)) and
+			    (rv[0]) and
+			    (rv[0][0] == fd))
+				true
 			else
-				if ((rv = Rex::ThreadSafe.select([ fd ], nil, nil, timeout)) and
-				    (rv[0]) and
-				    (rv[0][0] == fd))
-					true
-				else
-					false
-				end
+				false
 			end
+		rescue ::Errno::EBADF
+			return ::EOFError
 		rescue StreamClosedError, ::IOError, ::EOFError, ::Errno::EPIPE
 			# If the thing that lead to the closure was an abortive close, then
 			# don't raise the stream closed error.
