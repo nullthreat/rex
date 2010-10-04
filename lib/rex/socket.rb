@@ -135,11 +135,12 @@ module Socket
 	# Wrapper for Resolv.getaddress that takes special care to see if the
 	# supplied address is already a dotted quad, for instance.  This is
 	# necessary to prevent calls to gethostbyaddr (which occurs on windows).
-	# These calls can be quite slow.
+	# These calls can be quite slow. This also fixes an issue with the
+	# Resolv.getaddress() call being non-functional on Ruby 1.9.1 (Win32).
 	#
 	def self.getaddress(addr)
 		begin
-			dotted_ip?(addr) ? addr : Resolv.getaddress(addr)
+			dotted_ip?(addr) ? addr : self.addr_ntoa( ::Socket.gethostbyname(addr)[3] )
 		rescue ::ArgumentError # Win32 bug
 			nil
 		end
@@ -440,11 +441,12 @@ module Socket
 	#
 	##
 
-	def self.source_address(dest='50.50.50.50')
+	def self.source_address(dest='50.50.50.50', comm = ::Rex::Socket::Comm::Local)
 		begin
 			s = self.create_udp(
 				'PeerHost' => dest,
-				'PeerPort' => 31337
+				'PeerPort' => 31337,
+				'Comm'     => comm
 			)
 			r = s.getsockname[1]
 			s.close

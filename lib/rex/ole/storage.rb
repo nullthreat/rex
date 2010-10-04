@@ -1,6 +1,6 @@
 ##
-# $Id: storage.rb 8457 2010-02-11 18:36:38Z jduck $
-# Version: $Revision: 8457 $
+# $Id: storage.rb 10394 2010-09-20 08:06:27Z jduck $
+# Version: $Revision: 10394 $
 ##
 
 ##
@@ -174,7 +174,7 @@ class Storage
 		@header.write @fd
 		write_user_data
 
-		# NOTE: we call write_stream here since we MUST write this to 
+		# NOTE: we call write_stream here since we MUST write this to
 		# the regular stream (regardless of size)
 		ms_start = write_stream(@ministream)
 		@directory.set_ministream_params(ms_start, @ministream.length)
@@ -249,7 +249,7 @@ class Storage
 		@directory.each_entry { |stm|
 			# only regular streams this pass
 			next if (stm.type != STGTY_STREAM)
-			
+
 			if (stm.length >= @header._ulMiniSectorCutoff)
 				stm.start_sector = write_stream(stm)
 			else

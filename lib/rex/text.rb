@@ -235,10 +235,10 @@ module Text
 	# Returns the string with nonprintable hex characters sanitized to ascii. Similiar to to_hex,
 	# but regular ASCII is not translated if count is 1.
 	#
-	def self.to_hex_ascii(str, prefix = "\\x", count = 1)
+	def self.to_hex_ascii(str, prefix = "\\x", count = 1, suffix=nil)
 		raise ::RuntimeError, "unable to chunk into #{count} byte chunks" if ((str.length % count) > 0)
 		return str.unpack('H*')[0].gsub(Regexp.new(".{#{count * 2}}", nil, 'n')) { |s| 
-			(0x20..0x7e) === s.to_i(16) ? s.to_i(16).chr : prefix + s
+			(0x20..0x7e) === s.to_i(16) ? s.to_i(16).chr : prefix + s + suffix.to_s
 		}
 	end
 
@@ -474,6 +474,13 @@ module Text
 		else
 			raise TypeError, 'invalid mode'
 		end
+	end
+
+	#
+	# Encode an ASCII string so it's safe for XML. It's a wrapper for to_hex_ascii.
+	#
+	def self.xml_char_encode(str)
+		self.to_hex_ascii(str, "&#x", 1, ";")
 	end
 
 	#
@@ -745,10 +752,13 @@ module Text
 	# supplied number of identifiable characters (slots).  The supplied sets
 	# should not contain any duplicate characters or the logic will fail.
 	#
-	def self.pattern_create(length, sets = [ UpperAlpha, LowerAlpha, Numerals ])
+	def self.pattern_create(length, sets = nil)
 		buf = ''
 		idx = 0
 		offsets = []
+
+		# Make sure there's something in sets even if we were given an explicit nil
+		sets ||= [ UpperAlpha, LowerAlpha, Numerals ]
 
 		sets.length.times { offsets << 0 }
 

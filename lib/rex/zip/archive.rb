@@ -1,5 +1,5 @@
 ##
-# $Id: archive.rb 8439 2010-02-10 17:27:40Z jduck $
+# $Id: archive.rb 10073 2010-08-20 07:01:23Z egypt $
 ##
 
 module Rex
@@ -9,6 +9,7 @@ module Zip
 # This represents an entire archive.
 #
 class Archive
+	attr_reader :entries
 
 	def initialize(compmeth=CM_DEFLATE)
 		@compmeth = compmeth
@@ -85,6 +86,33 @@ class Archive
 		ret
 	end
 
+end
+
+class Jar < Archive
+	attr_accessor :manifest
+
+	def build_manifest(opts={})
+		main_class = opts[:main_class] || nil
+		skip = opts[:skip] || /^$/
+
+		@manifest = ''
+
+		@manifest = "Main-Class: #{main_class}\n\n" if main_class
+		@entries.each { |e|
+			next if e.name =~ skip
+			@manifest << "Name: #{e.name}\n\n"
+		}
+		add_file("META-INF/", '')
+		add_file("META-INF/MANIFEST.MF", @manifest)
+	end
+
+	def to_s
+		pack
+	end
+
+	def length
+		pack.length
+	end
 end
 
 end

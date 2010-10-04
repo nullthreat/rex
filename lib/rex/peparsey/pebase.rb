@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-# $Id: pebase.rb 7730 2009-12-07 12:56:54Z sf $
+# $Id: pebase.rb 10036 2010-08-18 04:39:38Z jduck $
 
 require 'rex/peparsey/exceptions'
 require 'rex/struct2'
@@ -1650,6 +1650,31 @@ class PeBase
 
 		rname.to_s
 	end
+	
+	def update_checksum
+		off = _dos_header.e_lfanew + IMAGE_FILE_HEADER_SIZE + 0x40
+		_isource.rawdata[off, 4] = [0].pack('V')
+
+		rem = _isource.size % 4
+		sum_me = ''
+		sum_me << _isource.rawdata
+		sum_me << "\x00" * (4 - rem) if rem > 0
+
+		cksum = 0
+		sum_me.unpack('V*').each { |el|
+			cksum = (cksum & 0xffffffff) + (cksum >> 32) + el
+			if cksum > 2**32
+				cksum = (cksum & 0xffffffff) + (cksum >> 32)
+			end
+		}
+
+		cksum = (cksum & 0xffff) + (cksum >> 16)
+		cksum += (cksum >> 16)
+		cksum &= 0xffff
+
+		cksum += _isource.size
+
+		_isource.rawdata[off, 4] = [cksum].pack('V')
+	end
 
 end end end
-

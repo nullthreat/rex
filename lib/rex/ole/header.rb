@@ -1,6 +1,6 @@
 ##
-# $Id: header.rb 8457 2010-02-11 18:36:38Z jduck $
-# Version: $Revision: 8457 $
+# $Id: header.rb 10394 2010-09-20 08:06:27Z jduck $
+# Version: $Revision: 10394 $
 ##
 
 ##
@@ -91,7 +91,7 @@ class Header
 		ret << ",\n"
 
 		if (@_csectFat)
-	  		ret << "  _csectFat => 0x%08x" % @_csectFat
+			ret << "  _csectFat => 0x%08x" % @_csectFat
 		else
 			ret << "  _csectFat => UNALLOCATED"
 		end

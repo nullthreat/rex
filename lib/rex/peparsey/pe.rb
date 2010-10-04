@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-# $Id: pe.rb 9272 2010-05-10 16:18:19Z jduck $
+# $Id: pe.rb 10036 2010-08-18 04:39:38Z jduck $
 
 require 'rex/image_source'
 require 'rex/peparsey/exceptions'
@@ -202,5 +202,11 @@ class Pe < PeBase
 		_isource.read(offset, len)
 	end
 
+	def size
+		_isource.size
+	end
+	def length
+		_isource.size
+	end
 
 end end end

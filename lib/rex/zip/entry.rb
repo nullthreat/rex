@@ -1,5 +1,5 @@
 ##
-# $Id: entry.rb 8572 2010-02-21 01:37:04Z jduck $
+# $Id: entry.rb 10056 2010-08-19 17:04:42Z egypt $
 ##
 
 module Rex
@@ -87,6 +87,10 @@ class Entry
 		end
 
 		ret
+	end
+
+	def inspect
+		"#<#{self.class} name:#{name}, data:#{@data.length} bytes>"
 	end
 
 end
