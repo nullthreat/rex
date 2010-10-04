@@ -110,6 +110,8 @@ NT_TRANSACT_SET_SECURITY_DESC        = 3 # Set security descriptor
 NT_TRANSACT_NOTIFY_CHANGE            = 4 # Start directory watch
 NT_TRANSACT_RENAME                   = 5 # Reserved (Handle-based)
 NT_TRANSACT_QUERY_SECURITY_DESC      = 6 # Retrieve security
+NT_TRANSACT_GET_USER_QUOTA           = 7 # Get quota
+NT_TRANSACT_SET_USER_QUOTA           = 8 # Set quota
 
 # Open Modes
 OPEN_MODE_CREAT = 0x10   # Create the file if file does not exists. Otherwise, operation fails.
@@ -468,9 +470,9 @@ SMB_NEG_RES_NT_HDR_PKT = Rex::Struct2::CStructTemplate.new(
 	[ 'uint32v', 'MaxRaw',               0 ],
 	[ 'uint32v', 'SessionKey',           0 ],
 	[ 'uint32v', 'Capabilities',         0 ],
-	[ 'uint32v', 'ServerTime',           0 ],
-	[ 'uint32v', 'ServerDate',           0 ],
-	[ 'uint16v', 'Timezone',             0 ],
+	[ 'uint32v', 'SystemTimeLow',        0 ],
+	[ 'uint32v', 'SystemTimeHigh',       0 ],
+	[ 'uint16v', 'ServerTimeZone',       0 ],
 	[ 'uint8',   'KeyLength',            0 ],
 	[ 'uint16v', 'ByteCount',            0 ],
 	[ 'string',  'Payload', nil,        '' ]
