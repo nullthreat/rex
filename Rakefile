@@ -5,7 +5,7 @@ task :build do
 end
  
 task :release => :build do
-  system "gem push librex-#{NessusDB::VERSION}.gem"
+  system "gem push librex-*.gem"
 end
 
 task :clean do
