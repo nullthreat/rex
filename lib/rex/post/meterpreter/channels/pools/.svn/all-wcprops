@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/!svn/ver/7792/framework3/trunk/lib/rex/post/meterpreter/channels/pools
+END
+file.rb
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/!svn/ver/7792/framework3/trunk/lib/rex/post/meterpreter/channels/pools/file.rb
+END
+stream_pool.rb
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/!svn/ver/7792/framework3/trunk/lib/rex/post/meterpreter/channels/pools/stream_pool.rb
+END

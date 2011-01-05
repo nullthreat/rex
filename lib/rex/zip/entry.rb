@@ -1,5 +1,5 @@
 ##
-# $Id: entry.rb 10056 2010-08-19 17:04:42Z egypt $
+# $Id: entry.rb 11173 2010-11-30 03:52:46Z egypt $
 ##
 
 module Rex
@@ -8,6 +8,7 @@ module Zip
 class Entry
 
 	attr_accessor :name, :flags, :info, :xtra, :comment, :attrs
+	attr_reader :data
 
 	def initialize(fname, data, compmeth, timestamp=nil, attrs=nil, xtra=nil, comment=nil)
 		@name = fname
@@ -32,6 +33,10 @@ class Entry
 		@compdata ||= ''
 	end
 
+	def data=(val)
+		@data = val
+		compress
+	end
 
 	def compress
 		@crc = Zlib.crc32(@data, 0)

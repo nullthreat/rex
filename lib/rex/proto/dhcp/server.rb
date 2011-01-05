@@ -1,4 +1,4 @@
-# $Id: server.rb 10261 2010-09-08 17:06:31Z jduck $
+# $Id: server.rb 11003 2010-11-12 06:19:49Z hdm $
 
 require 'rex/socket'
 require 'rex/proto/dhcp'
@@ -36,7 +36,9 @@ class Server
 		if ipstart
 			self.start_ip = Rex::Socket.addr_atoi(ipstart)
 		else
-			self.start_ip = "#{self.ipstring[0..2]}\x20" #default range x.x.x.32-254
+			# Use the first 3 octects of the server's IP to construct the
+			# default range of x.x.x.32-254
+			self.start_ip = "#{self.ipstring[0..2]}\x20".unpack("N").first
 		end
 		self.current_ip = start_ip
 
@@ -44,7 +46,9 @@ class Server
 		if ipend
 			self.end_ip = Rex::Socket.addr_atoi(ipend)
 		else
-			self.end_ip = "#{self.ipstring[0..2]}\xfe"
+			# Use the first 3 octects of the server's IP to construct the
+			# default range of x.x.x.32-254
+			self.end_ip = "#{self.ipstring[0..2]}\xfe".unpack("N").first
 		end
 
 		# netmask
@@ -95,7 +99,7 @@ class Server
 			'Context'   => context
 		)
 
-		self.thread = Thread.new {
+		self.thread = Rex::ThreadFactory.spawn("DHCPServerMonitor", false) {
 			monitor_socket
 		}
 	end
