@@ -4,7 +4,7 @@ task :build => :update do
   system "gem build librex.gemspec"
 end
  
-task :release do
+task :release => :build do
   system "gem push librex-*.gem"
 end
 
