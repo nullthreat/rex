@@ -27,9 +27,9 @@ task :update_rex do
 	puts "[*] Checkout Revision: #{rev[1]}"
 	
 	puts "[*] Copying new files"
-	system "cp /tmp/msftmp/lib/rex.rb lib/"
-	system "cp /tmp/msftmp/lib/rex.rb.ts.rb lib/"
-	system "cp -r /tmp/msftmp/lib/rex/ lib/"
+	system "mv /tmp/msftmp/lib/rex.rb lib/"
+	system "mv /tmp/msftmp/lib/rex.rb.ts.rb lib/"
+	system "mv /tmp/msftmp/lib/rex/ lib/"
 	system "git add lib/"
 	system "git commit -m \"Updated for Revision #{rev[1]}\""
 	
