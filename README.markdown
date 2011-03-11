@@ -7,4 +7,3 @@ SVN Revision: 11930
 
 # Credits
 The Metasploit development team <http://www.metasploit.com>
-
