@@ -20,13 +20,19 @@ task :update_rex do
 	system "git commit -a -m \"Removed old code.\""
 	system "mkdir lib"
 	
-#	results = `svn co https://www.metasploit.com/svn/framework3/trunk/ /tmp/msftmp`
-#	rev = results.match(/^Checked out revision (.*)\.$/)
+	puts "[*] Checking out Metasploit trunk"
+	results = `svn co https://www.metasploit.com/svn/framework3/trunk/ /tmp/msftmp`
+	rev = results.match(/^Checked out revision (.*)\.$/)
 	
-#	puts rev[1]
+	puts "[*] Checkout Revision: #{rev[1]}"
 	
+	puts "[*] Copying new files"
+	system "cp /tmp/msftmp/lib/rex.rb lib/"
+	system "cp /tmp/msftmp/lib/rex.rb.ts.rb lib/"
+	system "cp -r /tmp/msftmp/lib/rex/ lib/"
+	system "git add lib/"
+	system "git commit -m \"Updated for Revision #{rev[1]}\""
 	
-	
-	
-#	system "rm -rf /tmp/msftmp"
+	puts "[*] Cleaning up tmp files"	
+	system "rm -rf /tmp/msftmp"
 end
