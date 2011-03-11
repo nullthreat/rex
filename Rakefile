@@ -4,7 +4,7 @@ task :build => :update do
   system "gem build librex.gemspec"
 end
  
-task :release => :build do
+task :release do
   system "gem push librex-*.gem"
 end
 
@@ -37,7 +37,6 @@ task :update do
 	system "rm -rf /tmp/msftmp"
 	
 	puts "[*] Updating librex.gemspec with new Version and Revision Number"
-	rev = 123
 	File.open("librex.gemspec.1", "w+") do |output|
 		File.open("librex.gemspec", "r") do |input|
 			while (line = input.gets)
