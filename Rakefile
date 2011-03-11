@@ -17,7 +17,7 @@ task :update do
 	system "git rm lib/rex.rb"
 	system "git rm lib/rex.rb.ts.rb"
 	system "git rm -rf lib/rex/"
-	system "git commit -a -m \"Removed old code.\""
+#	system "git commit -a -m \"Removed old code.\""
 	system "mkdir lib"
 	
 	puts "[*] Checking out Metasploit trunk"
