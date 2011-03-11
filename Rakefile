@@ -30,6 +30,7 @@ task :update_rex do
 	system "mv /tmp/msftmp/lib/rex.rb lib/"
 	system "mv /tmp/msftmp/lib/rex.rb.ts.rb lib/"
 	system "mv /tmp/msftmp/lib/rex/ lib/"
+	system "find . -iname '.svn' -exec rm -rf {} \\;"
 	system "git add lib/"
 	system "git commit -m \"Updated for Revision #{rev[1]}\""
 	
