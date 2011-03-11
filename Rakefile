@@ -50,7 +50,7 @@ task :update do
 						
 					line = "VERSION = \"#{version}\"\n"
 				elsif line =~ /^REVISION = (.*)$/
-					line = "REVISION = \"#{rev}\"\n"
+					line = "REVISION = \"#{rev[1]}\"\n"
 				else
 					line = line
 				end
@@ -63,12 +63,11 @@ task :update do
 	system "mv librex.gemspec.1 librex.gemspec"
 	
 	puts "[*] Updating README.markdown with new Revision Number"
-	rev = 123
 	File.open("README.markdown.1", "w+") do |output|
 		File.open("README.markdown", "r") do |input|
 			while (line = input.gets)						
 				if line =~ /^SVN Revision: (.*)$/
-					line = "SVN Revision: #{rev}\n"
+					line = "SVN Revision: #{rev[1]}\n"
 				else
 					line = line
 				end
@@ -80,7 +79,7 @@ task :update do
 	
 	system "mv README.markdown.1 README.markdown"
 	
-	puts "Commiting and Pushing Updates for Revision #{rev[1]}"
 	system "git commit -m \"Updated for Revision #{rev[1]}\""
+	puts "Commiting and Pushing Updates for Revision #{rev[1]}"
 	system "git push"
 end
