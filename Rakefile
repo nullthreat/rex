@@ -79,7 +79,7 @@ task :update do
 	
 	system "mv README.markdown.1 README.markdown"
 	
-	system "git commit -m \"Updated for Revision #{rev[1]}\""
+	system "git commit -a -m \"Updated for Revision #{rev[1]}\""
 	puts "Commiting and Pushing Updates for Revision #{rev[1]}"
 	system "git push"
 end
