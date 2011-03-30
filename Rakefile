@@ -6,6 +6,7 @@ end
  
 task :release => :build do
   system "gem push librex-*.gem"
+  sysmte "rm *.gem"
 end
 
 task :clean do
