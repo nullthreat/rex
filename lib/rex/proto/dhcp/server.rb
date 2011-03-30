@@ -1,4 +1,4 @@
-# $Id: server.rb 11745 2011-02-12 22:25:02Z jduck $
+# $Id: server.rb 12030 2011-03-20 00:33:02Z scriptjunkie $
 
 require 'rex/socket'
 require 'rex/proto/dhcp'
@@ -236,11 +236,12 @@ protected
 		pkt << buf[1..7] #hwtype, hwlen, hops, txid
 		pkt << "\x00\x00\x00\x00"  #elapsed, flags
 		pkt << clientip
-
-		# give next ip address (not super reliable high volume but it should work for a basic server)
-		self.current_ip += 1
-		if self.current_ip > self.end_ip
-			self.current_ip = self.start_ip
+		if messageType == DHCPDiscover
+			# give next ip address (not super reliable high volume but it should work for a basic server)
+			self.current_ip += 1
+			if self.current_ip > self.end_ip
+				self.current_ip = self.start_ip
+			end
 		end
 		pkt << Rex::Socket.addr_iton(self.current_ip)
 		pkt << self.ipstring #next server ip

@@ -1,8 +1,8 @@
 # encoding: utf-8
 
 APP_NAME = "librex"
-VERSION = "0.0.12"
-REVISION = "11938"
+VERSION = "0.0.13"
+REVISION = "12182"
 
 Gem::Specification.new do |s|
 	s.name									= APP_NAME
