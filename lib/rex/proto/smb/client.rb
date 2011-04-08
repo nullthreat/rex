@@ -723,8 +723,6 @@ NTLM_UTILS = Rex::Proto::NTLM::Utils
 	# Authenticate without ntlmssp with a precomputed hash pair
 	def session_setup_no_ntlmssp_prehash(user, domain, hash_lm, hash_nt, do_recv = true)
 
-		#raise XCEPT::NTLM2MissingChallenge if self.require_signing
-
 		data = ''
 		data << hash_lm
 		data << hash_nt
@@ -871,9 +869,11 @@ NTLM_UTILS = Rex::Proto::NTLM::Utils
 												self.spnopt, ntlm_options)
 		enc_session_key = ''
 		self.sequence_counter = 0
+
 		if self.require_signing
-			self.signing_key, enc_session_key = NTLM_UTILS.create_session_key(server_ntlmssp_flags, user, pass, domain, self.challenge_key,
-											client_challenge, ntlm_cli_challenge, ntlm_options)
+			self.signing_key, enc_session_key, ntlmssp_flags = NTLM_UTILS.create_session_key(ntlmssp_flags, server_ntlmssp_flags, user, pass, domain, 
+											self.challenge_key, client_challenge, ntlm_cli_challenge, 
+											ntlm_options)
 		end
 		
 		# Create the security blob data

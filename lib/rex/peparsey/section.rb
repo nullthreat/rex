@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-# $Id: section.rb 6686 2009-06-20 17:53:53Z hdm $
+# $Id: section.rb 12196 2011-04-01 00:51:33Z egypt $
 
 require 'rex/peparsey/exceptions'
 require 'rex/peparsey/pebase'

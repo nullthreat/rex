@@ -1,4 +1,4 @@
-# $Id: constants.rb 9990 2010-08-13 03:11:30Z jduck $
+# $Id: constants.rb 12196 2011-04-01 00:51:33Z egypt $
 require 'rex/proto/dhcp'
 
 module Rex

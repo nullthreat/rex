@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-# $Id: pescan.rb 5413 2008-02-13 02:43:56Z ramon $
+# $Id: pescan.rb 12196 2011-04-01 00:51:33Z egypt $
 
 module Rex
 module PeScan

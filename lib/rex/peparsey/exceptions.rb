@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-# $Id: exceptions.rb 5871 2008-11-10 21:18:12Z hdm $
+# $Id: exceptions.rb 12196 2011-04-01 00:51:33Z egypt $
 
 module Rex
 module PeParsey

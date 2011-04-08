@@ -1,5 +1,6 @@
 require 'rex/proto/ntlm/constants'
 require 'rex/proto/ntlm/crypt'
+require 'rex/proto/ntlm/exceptions'
 
 module Rex
 module Proto
@@ -8,6 +9,7 @@ class Utils
 
 	CONST = Rex::Proto::NTLM::Constants
 	CRYPT = Rex::Proto::NTLM::Crypt
+	XCEPT = Rex::Proto::NTLM::Exceptions
 
   	#duplicate from lib/rex/proto/smb/utils cause we only need this fonction from Rex::Proto::SMB::Utils
 	# Convert a unix timestamp to a 64-bit signed server time
@@ -376,7 +378,7 @@ class Utils
 		cidx = blob.index("NTLMSSP\x00\x02\x00\x00\x00")
 
 		if not cidx
-			raise XCEPT::NTLM2MissingChallenge
+			raise XCEPT::NTLMMissingChallenge
 		end
 
 		data[:challenge_key] = blob[cidx + 24, 8]
@@ -629,7 +631,7 @@ class Utils
 	end
 
 	# create the session key
-	def self.create_session_key(server_ntlmssp_flags, user, pass, domain, challenge_key,
+	def self.create_session_key(ntlmssp_flags, server_ntlmssp_flags, user, pass, domain, challenge_key,
 					client_challenge = '', ntlm_cli_challenge = '' , opt = {} )
 
 		usentlm2_session 	= opt[:usentlm2_session]	!= nil ? opt[:usentlm2_session] : true
@@ -669,7 +671,6 @@ class Utils
 				ntlmssp_flags |= CONST::NEGOTIATE_56
 			end
 		end
-
 		# Generate the user session key
 		lanman_weak = false
 		if send_ntlm  # Should be default
@@ -750,7 +751,7 @@ class Utils
 			signing_key = user_session_key
 		end
 		
-		return signing_key, enc_session_key
+		return signing_key, enc_session_key, ntlmssp_flags
 	
 		
 	end

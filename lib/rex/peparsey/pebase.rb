@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-# $Id: pebase.rb 10036 2010-08-18 04:39:38Z jduck $
+# $Id: pebase.rb 12196 2011-04-01 00:51:33Z egypt $
 
 require 'rex/peparsey/exceptions'
 require 'rex/struct2'
