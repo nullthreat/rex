@@ -16,11 +16,11 @@ end
 
 task :update do
 	puts "[*] Removing old rex code"
-	system "git rm lib/rex.rb"
-	system "git rm lib/rex.rb.ts.rb"
-	system "git rm -rf lib/"
-	system "rm -rf lib/"  #So there is a cvs file in the msf stuff that breaks things
-	system "mkdir lib"
+	system "git rm lib/rex.rb > /dev/null"
+	system "git rm lib/rex.rb.ts.rb > /dev/null"
+	system "git rm -rf lib/ > /dev/null"
+	system "rm -rf lib/ > /dev/null"  #So there is a cvs file in the msf stuff that breaks things
+	system "mkdir lib > /dev/null"
 	
 	puts "[*] Checking out Metasploit trunk"
 	results = `svn co https://www.metasploit.com/svn/framework3/trunk/ /tmp/msftmp`
@@ -32,11 +32,13 @@ task :update do
 	system "mv /tmp/msftmp/lib/rex.rb lib/"
 	system "mv /tmp/msftmp/lib/rex.rb.ts.rb lib/"
 	system "mv /tmp/msftmp/lib/rex/ lib/"
-	system "find . -iname '.svn' -exec rm -rf {} \\;"
+	system "find . -iname '.svn' -exec rm -rf {} \\; > /dev/null"
 	system "git add lib/"
 
 	puts "[*] Cleaning up tmp files"	
 	system "rm -rf /tmp/msftmp"
+	
+	version = ""
 	
 	puts "[*] Updating librex.gemspec with new Version and Revision Number"
 	File.open("librex.gemspec.1", "w+") do |output|
@@ -85,5 +87,6 @@ task :update do
 	puts "Commiting and Pushing Updates for Revision #{rev[1]}"
 	system "git push"
 	
+	#Twitter tweet for the update, I am that lazy yes.
 	puts "Updated librex to v#{version} based on SVN Revision: #{rev[1]} of the Metasploit rex library. Available in rubygems."
 end
