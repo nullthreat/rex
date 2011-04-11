@@ -18,7 +18,7 @@ task :update do
 	system "git rm lib/rex.rb"
 	system "git rm lib/rex.rb.ts.rb"
 	system "git rm -rf lib/"
-	system "rm -rf lib/"
+#	system "rm -rf lib/"  #So there is a cvs file in the msf stuff that breaks things
 	system "mkdir lib"
 	
 	puts "[*] Checking out Metasploit trunk"
