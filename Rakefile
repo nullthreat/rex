@@ -11,16 +11,16 @@ task :release => :build do
 end
 
 task :clean do
-	system "rm *.gem"
+	system "rm *.gem &> /dev/null"
 end
 
 task :update do
 	puts "[*] Removing old rex code"
-	system "git rm lib/rex.rb > /dev/null"
-	system "git rm lib/rex.rb.ts.rb > /dev/null"
-	system "git rm -rf lib/ > /dev/null"
-	system "rm -rf lib/ > /dev/null"  #So there is a cvs file in the msf stuff that breaks things
-	system "mkdir lib > /dev/null"
+	system "git rm lib/rex.rb &> /dev/null"
+	system "git rm lib/rex.rb.ts.rb &> /dev/null"
+	system "git rm -rf lib/ &> /dev/null"
+	system "rm -rf lib/ &> /dev/null"  #So there is a cvs file in the msf stuff that breaks things
+	system "mkdir lib &> /dev/null"
 	
 	puts "[*] Checking out Metasploit trunk"
 	results = `svn co https://www.metasploit.com/svn/framework3/trunk/ /tmp/msftmp`
@@ -29,11 +29,11 @@ task :update do
 	puts "[*] Checkout Revision: #{rev[1]}"
 	
 	puts "[*] Copying new files"
-	system "mv /tmp/msftmp/lib/rex.rb lib/"
-	system "mv /tmp/msftmp/lib/rex.rb.ts.rb lib/"
-	system "mv /tmp/msftmp/lib/rex/ lib/"
-	system "find . -iname '.svn' -exec rm -rf {} \\; > /dev/null"
-	system "git add lib/"
+	system "mv /tmp/msftmp/lib/rex.rb lib/ &> /dev/null"
+	system "mv /tmp/msftmp/lib/rex.rb.ts.rb lib/ &> /dev/null"
+	system "mv /tmp/msftmp/lib/rex/ lib/ &> /dev/null"
+	system "find . -iname '.svn' -exec rm -rf {} \\; &> /dev/null"
+	system "git add lib/ &> /dev/null"
 
 	puts "[*] Cleaning up tmp files"	
 	system "rm -rf /tmp/msftmp"
@@ -81,7 +81,7 @@ task :update do
 		end
 	end
 	
-	system "mv README.markdown.1 README.markdown"
+	system "mv README.markdown.1 README.markdown &> /dev/null"
 	
 	system "git commit -a -m \"Updated for Revision #{rev[1]}\""
 	puts "Commiting and Pushing Updates for Revision #{rev[1]}"
