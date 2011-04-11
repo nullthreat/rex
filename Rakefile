@@ -50,7 +50,7 @@ task :update do
 					version[2] = version[2].to_i + 1
 					version = version.join(".")
 					
-					puts "#{version}"
+					print "#{version}"
 						
 					line = "VERSION = \"#{version}\"\n"
 				elsif line =~ /^REVISION = (.*)$/
@@ -83,9 +83,9 @@ task :update do
 	
 	system "mv README.markdown.1 README.markdown &> /dev/null"
 	
-	system "git commit -a -m \"Updated for Revision #{rev[1]}\""
-	puts "Commiting and Pushing Updates for Revision #{rev[1]}"
-	system "git push"
+	system "git commit -a -m \"Updated for Revision #{rev[1]}\" &> /dev/null"
+	puts "Commiting and Pushing Updates for Revision #{rev[1]} &> /dev/null"
+	system "git push &> /dev/null"
 	
 	#Twitter tweet for the update, I am that lazy yes.
 	puts "Updated librex to v#{version} based on SVN Revision: #{rev[1]} of the Metasploit rex library. Available in rubygems."
