@@ -84,4 +84,6 @@ task :update do
 	system "git commit -a -m \"Updated for Revision #{rev[1]}\""
 	puts "Commiting and Pushing Updates for Revision #{rev[1]}"
 	system "git push"
+	
+	puts "Updated librex to v#{version} based on SVN Revision: #{rev[1]} of the Metasploit rex library. Available in rubygems."
 end
