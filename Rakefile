@@ -1,12 +1,13 @@
 # encoding: utf-8
  
 task :build => :update do
+	Rake::Task['clean'].execute
   system "gem build librex.gemspec"
 end
  
 task :release => :build do
   system "gem push librex-*.gem"
-  system "rm *.gem"
+	Rake::Task['clean'].execute
 end
 
 task :clean do
@@ -18,7 +19,7 @@ task :update do
 	system "git rm lib/rex.rb"
 	system "git rm lib/rex.rb.ts.rb"
 	system "git rm -rf lib/"
-#	system "rm -rf lib/"  #So there is a cvs file in the msf stuff that breaks things
+	system "rm -rf lib/"  #So there is a cvs file in the msf stuff that breaks things
 	system "mkdir lib"
 	
 	puts "[*] Checking out Metasploit trunk"
