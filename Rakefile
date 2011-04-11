@@ -2,11 +2,13 @@
  
 task :build => :update do
 	Rake::Task['clean'].execute
-  system "gem build librex.gemspec"
+	puts "[*] Building librex.gemspec"
+  system "gem build librex.gemspec &> /dev/null"
 end
  
 task :release => :build do
-  system "gem push librex-*.gem"
+	puts "[*] Pushing librex to rubygems.org"
+  system "gem push librex-*.gem &> /dev/null"
 	Rake::Task['clean'].execute
 end
 
@@ -40,7 +42,7 @@ task :update do
 	
 	version = ""
 	
-	puts "[*] Updating librex.gemspec with new Version and Revision Number"
+	print "[*] Updating librex.gemspec with new Version and Revision Number"
 	File.open("librex.gemspec.1", "w+") do |output|
 		File.open("librex.gemspec", "r") do |input|
 			while (line = input.gets)
@@ -50,7 +52,7 @@ task :update do
 					version[2] = version[2].to_i + 1
 					version = version.join(".")
 					
-					print "#{version}"
+					print "#{version}\n"
 						
 					line = "VERSION = \"#{version}\"\n"
 				elsif line =~ /^REVISION = (.*)$/
@@ -84,7 +86,7 @@ task :update do
 	system "mv README.markdown.1 README.markdown &> /dev/null"
 	
 	system "git commit -a -m \"Updated for Revision #{rev[1]}\" &> /dev/null"
-	puts "Commiting and Pushing Updates for Revision #{rev[1]} &> /dev/null"
+	puts "Commiting and Pushing Updates for Revision #{rev[1]}"
 	system "git push &> /dev/null"
 	
 	#Twitter tweet for the update, I am that lazy yes.
