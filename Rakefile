@@ -86,7 +86,7 @@ task :update do
 	system "mv README.markdown.1 README.markdown &> /dev/null"
 	
 	system "git commit -a -m \"Updated for Revision #{rev[1]}\" &> /dev/null"
-	puts "Commiting and Pushing Updates for Revision #{rev[1]}"
+	puts "[*] Commiting and Pushing Updates for Revision #{rev[1]}"
 	system "git push &> /dev/null"
 	
 	#Twitter tweet for the update, I am that lazy yes.
