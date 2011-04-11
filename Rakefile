@@ -18,6 +18,7 @@ task :update do
 	system "git rm lib/rex.rb"
 	system "git rm lib/rex.rb.ts.rb"
 	system "git rm -rf lib/"
+	system "rm -rf lib/"
 	system "mkdir lib"
 	
 	puts "[*] Checking out Metasploit trunk"
