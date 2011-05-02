@@ -68,19 +68,19 @@ module StreamAbstraction
 	end
 
 	#
-	# Writes to the local side.
+	# Low-level write to the local side.
 	#
 	def syswrite(buffer)
 		lsock.syswrite(buffer)
 	end
-
+	
 	#
-	# Reads from the local side.
+	# Low-level read from the local side.
 	#
 	def sysread(length)
 		lsock.sysread(length)
 	end
-
+	
 	#
 	# Shuts down the local side of the stream abstraction.
 	#
@@ -160,15 +160,18 @@ protected
 					total_length = buf.length
 					while( total_sent < total_length )
 						begin
-							data = buf[0, buf.length]
+							data = buf[total_sent, buf.length]
+							
+							# Note that this must be write() NOT syswrite() or put() or anything like it.
+							# Using syswrite() breaks SSL streams.
 							sent = self.write( data )
-							# sf: Only remove the data off the queue is syswrite was successfull.
+							
+							# sf: Only remove the data off the queue is write was successfull.
 							#     This way we naturally perform a resend if a failure occured.
 							#     Catches an edge case with meterpreter TCP channels where remote send
 							#     failes gracefully and a resend is required.
 							if( sent > 0 )
 								total_sent += sent
-								buf[0, sent] = ""
 							end
 						rescue ::IOError => e
 							closed = true

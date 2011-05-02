@@ -54,7 +54,7 @@ class RingBuffer
 	end
 	
 	#
-	# The built-in monitor thread 
+	# The built-in monitor thread (normally unused with Metasploit)
 	#
 	def monitor_thread
 		Thread.new do 
@@ -74,8 +74,8 @@ class RingBuffer
 	# Push data back into the associated stream socket. Logging must occur
 	# elsewhere, this function is simply a passthrough.
 	#
-	def put(data)
-		self.fd.put(data)
+	def put(data, opts={})
+		self.fd.put(data, opts={})
 	end
 	
 	#

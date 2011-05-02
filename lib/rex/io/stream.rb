@@ -35,20 +35,20 @@ module Stream
 		total_sent   = 0
 		total_length = buf.length
 		block_size   = 32768
+		
 		begin
 			while( total_sent < total_length )
 				s = Rex::ThreadSafe.select( nil, [ fd ], nil, 0.2 )
 				if( s == nil || s[0] == nil )
 					next
 				end
-				data = buf[0, block_size]
+				data = buf[total_sent, block_size]
 				sent = fd.write_nonblock( data )
 				if sent > 0
 					total_sent += sent
-					buf[0, sent] = ""
 				end
 			end
-		rescue ::Errno::EAGAIN
+		rescue ::Errno::EAGAIN, ::Errno::EWOULDBLOCK
 			# Sleep for a half a second, or until we can write again
 			Rex::ThreadSafe.select( nil, [ fd ], nil, 0.5 )
 			# Decrement the block size to handle full sendQs better
@@ -57,8 +57,8 @@ module Stream
 			retry
 		rescue ::IOError, ::Errno::EPIPE
 			return nil if (fd.abortive_close == true)
-			raise $!
 		end
+		
 		total_sent
 	end
 
@@ -66,12 +66,16 @@ module Stream
 	# This method reads data of the supplied length from the stream.
 	#
 	def read(length = nil, opts = {})
-		# XXX handle length being nil
+		
 		begin
-			fd.readpartial(length)
-		rescue ::IOError, ::EOFError, ::Errno::EPIPE
+			return fd.read_nonblock( length ) 				
+		rescue ::Errno::EAGAIN, ::Errno::EWOULDBLOCK
+			# Sleep for a half a second, or until we can read again
+			Rex::ThreadSafe.select( [ fd ], nil, nil, 0.5 )
+			# Decrement the block size to handle full sendQs better
+			retry
+		rescue ::IOError, ::Errno::EPIPE
 			return nil if (fd.abortive_close == true)
-			raise $!
 		end
 	end
 

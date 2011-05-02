@@ -15,9 +15,9 @@ module Rex::Socket::SslTcpServer
 	begin
 		require 'openssl'
 		@@loaded_openssl = true
+		require 'openssl/nonblock'
 	rescue ::Exception
 	end
-
 
 	include Rex::Socket::TcpServer
 
@@ -57,10 +57,39 @@ module Rex::Socket::SslTcpServer
 
 		begin
 			ssl = OpenSSL::SSL::SSLSocket.new(sock, self.sslctx)
-			ssl.accept
+
+		
+			if not ssl.respond_to?(:accept_nonblock)	
+				ssl.accept
+			else
+				begin
+					ssl.accept_nonblock
+
+				# Ruby 1.8.7 and 1.9.0/1.9.1 uses a standard Errno
+				rescue ::Errno::EAGAIN, ::Errno::EWOULDBLOCK
+						IO::select(nil, nil, nil, 0.10)
+						retry
+
+				# Ruby 1.9.2+ uses IO::WaitReadable/IO::WaitWritable			
+				rescue ::Exception => e
+					if ::IO.const_defined?('WaitReadable') and e.kind_of?(::IO::WaitReadable)
+						IO::select( [ ssl ], nil, nil, 0.10 )
+						retry
+					end
+					
+					if ::IO.const_defined?('WaitWritable') and e.kind_of?(::IO::WaitWritable)						
+						IO::select( nil, [ ssl ], nil, 0.10 )
+						retry
+					end
+					
+					raise e
+				end
+			end
+			
 			sock.extend(Rex::Socket::SslTcp)
 			sock.sslsock = ssl
 			sock.sslctx  = self.sslctx
+
 			return sock
 
 		rescue ::OpenSSL::SSL::SSLError

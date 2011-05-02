@@ -1,4 +1,4 @@
-# $Id: constants.rb 12196 2011-04-01 00:51:33Z egypt $
+# $Id: constants.rb 12375 2011-04-20 14:21:36Z jduck $
 require 'rex/proto/dhcp'
 
 module Rex
@@ -20,6 +20,7 @@ OpLeaseTime = 0x33
 OpSubnetMask = 1
 OpRouter = 3
 OpDns = 6
+OpHostname = 0x0c
 OpEnd = 0xff
 
 PXEMagic = "\xF1\x00\x74\x7E"
