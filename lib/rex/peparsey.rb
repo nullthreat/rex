@@ -1,11 +1,12 @@
 #!/usr/bin/env ruby
-#
-# $Id: peparsey.rb 12554 2011-05-06 18:47:10Z jduck $
-#
+
+# $Id: peparsey.rb 12600 2011-05-12 20:03:55Z hdm $
 
 module Rex
 module PeParsey
-	autoload :Pe,        'rex/peparsey/pe'
-	autoload :PeMemDump, 'rex/peparsey/pe_memdump'
+
 end
 end
+
+require 'rex/peparsey/pe'
+require 'rex/peparsey/pe_memdump'
