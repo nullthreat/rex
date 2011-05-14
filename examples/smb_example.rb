@@ -7,9 +7,9 @@
 require 'rubygems'
 require 'rex'
 
-host = ""
-username = ""
-password = ""
+host = ARGV[0]
+username = ARGV[1]
+password = ARGV[2]
 #hostname is interesting, new windows require the actual hostname of the box 
 #to connect so this may not work on 7
 hostname = "*SMBSERVER" 
