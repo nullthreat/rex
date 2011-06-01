@@ -114,9 +114,46 @@ module Parser
 			return true
 		end
 
-		# XXX: Define this
+		# XXX: Document classes ought to define this
 		def determine_port_state(v)
 			return v
+		end
+
+		# Circumvent the unknown attribute logging by the various reporters. They
+		# seem to be there just for debugging anyway. 
+		def db_report(table, data)
+			raise "Data should be a hash" unless data.kind_of? Hash
+			nonempty_data = data.reject {|k,v| v.nil?}
+			valid_attrs = db_valid_attributes(table)
+			raise "Unknown table `#{table}'" if valid_attrs.empty?
+			if table == :note # Notes don't whine about extra stuff
+				just_the_facts = nonempty_data
+			else
+				just_the_facts = nonempty_data.select {|k,v| valid_attrs.include? k.to_s.to_sym}
+			end
+			just_the_facts.empty? ? return : db.send("report_#{table}", just_the_facts)
+		end
+
+		# XXX: It would be better to either have a single registry of acceptable 
+		# keys if we're going to alert on bad ones, or to be more forgiving if 
+		# the caller is this thing. There is basically no way to tell if 
+		# report_host()'s tastes are going to change with this scheme.
+		def db_valid_attributes(table)
+			case table.to_s.to_sym
+			when :host
+				Msf::DBManager::Host.new.attribute_names.map {|x| x.to_sym} |
+					[:host, :workspace]
+			when :service
+				Msf::DBManager::Service.new.attribute_names.map {|x| x.to_sym} |
+					[:host, :host_name, :mac, :workspace]
+			when :vuln
+				Msf::DBManager::Vuln.new.attribute_names.map {|x| x.to_sym} |
+					[:host, :refs, :workspace, :port, :proto]
+			when :note
+					[:anything]
+			else
+				[]
+			end
 		end
 
 		# Nokogiri 1.4.4 (and presumably beyond) generates attrs as pairs,
@@ -139,13 +176,30 @@ module Parser
 			return attr_pairs
 		end
 
+		# This breaks xml-encoded characters, so need to append.
+		# It's on the end_element tag name to turn the appending
+		# off and clear out the data.
+		def characters(text)
+			return unless @state[:has_text]
+			@text ||= ""
+			@text << text
+		end
+
+		# Effectively the same as characters()
+		def cdata_block(text)
+			return unless @state[:has_text]
+			@text ||= ""
+			@text << text
+		end
+
 		def end_document
 			block = @block
+			return unless @report_type_ok
 			unless @state[:current_tag].empty?
 				missing_ends = @state[:current_tag].keys.map {|x| "'#{x}'"}.join(", ")
 				msg = "Warning, the provided file is incomplete, and there may be missing\n"
 				msg << "data. The following tags were not closed: #{missing_ends}."
-				db.emit(:warning,msg,&block)
+				db.emit(:warning,msg,&block) if block
 			end
 		end
 

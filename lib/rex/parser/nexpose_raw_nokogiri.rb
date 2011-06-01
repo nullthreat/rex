@@ -43,13 +43,6 @@ module Rex
 			end
 		end
 
-		# This breaks on xml-encoded characters, so need to append
-		def characters(text)
-			return unless @state[:has_text]
-			@text ||= ""
-			@text << text
-		end
-
 		# When we exit a tag, this is triggered.
 		def end_element(name=nil)
 			block = @block
@@ -109,7 +102,8 @@ module Rex
 			return unless @report_data[:vuln][:matches].kind_of? Array
 			refs = normalize_references(@report_data[:vuln][:refs])
 			refs << "NEXPOSE-#{report_data[:vuln]["id"]}"
-			db.emit(:vuln, [refs.last,@report_data[:vuln][:matches].size], &block)
+			vuln_instances = @report_data[:vuln][:matches].size
+			db.emit(:vuln, [refs.last,vuln_instances], &block) if block
 			data = {
 				:workspace => @args[:wspace],
 				:name => refs.last,
@@ -122,7 +116,7 @@ module Rex
 				host_data[:host] = match[:host]
 				host_data[:port] = match[:port] if match[:port]
 				host_data[:proto] = match[:protocol] if match[:protocol]
-				db.report_vuln(host_data)
+				db_report(:vuln, host_data)
 				if match[:key]
 					hosts_keys[host_data[:host]] ||= []
 					hosts_keys[host_data[:host]] << match[:key]
@@ -147,7 +141,7 @@ module Rex
 					next if key_note[:data][data[:name]].include? key_value
 					key_note[:data][data[:name]] << key_value
 				end
-				db.report_note(key_note)
+				db_report(:note, key_note)
 			end
 		end
 
@@ -240,7 +234,7 @@ module Rex
 			note[:data][:product] = @report_data[:os]["os_product"] if @report_data[:os]["os_prduct"]
 			note[:data][:version] = @report_data[:os]["os_version"] if @report_data[:os]["os_version"]
 			note[:data][:arch] = @report_data[:os]["os_arch"] if @report_data[:os]["os_arch"]
-			db.report_note(note)
+			db_report(:note, note)
 		end
 
 		def report_services(host_object)
@@ -249,7 +243,7 @@ module Rex
 			return if @report_data[:ports].empty?
 			reported = []
 			@report_data[:ports].each do |svc|
-				reported << db.report_service(svc.merge(:host => host_object))
+				reported << db_report(:service, svc.merge(:host => host_object))
 			end
 			reported
 		end
@@ -277,7 +271,12 @@ module Rex
 				end
 			end
 			if @state[:service]
-				port_hash[:name] = @state[:service]["name"] if @state[:service]["name"] != "<unknown>"
+				if state[:service]["name"] == "<unknown>"
+					sname = nil
+				else
+					sname = db.nmap_msf_service_map(@state[:service]["name"])
+				end
+				port_hash[:name] = sname
 			end
 			if @state[:service_fingerprint]
 				info = []
@@ -347,7 +346,7 @@ module Rex
 		def report_host(&block)
 			if host_is_okay
 				db.emit(:address,@report_data[:host],&block) if block
-				host_object = db.report_host( @report_data.merge(
+				host_object = db_report(:host, @report_data.merge(
 					:workspace => @args[:wspace] ) )
 					if host_object
 						db.report_import_note(host_object.workspace, host_object)
