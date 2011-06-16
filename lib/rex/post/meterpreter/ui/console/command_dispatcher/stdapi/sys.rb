@@ -37,10 +37,12 @@ class Console::CommandDispatcher::Stdapi::Sys
 	#
 	@@reg_opts = Rex::Parser::Arguments.new(
 		"-d" => [ true,  "The data to store in the registry value."                ],
-		"-h" => [ true,  "Help menu."                                              ],
+		"-h" => [ false, "Help menu."                                              ],
 		"-k" => [ true,  "The registry key path (E.g. HKLM\\Software\\Foo)."       ],
 		"-t" => [ true,  "The registry value type (E.g. REG_SZ)."                  ],
-		"-v" => [ true,  "The registry value name (E.g. Stuff)."                   ])
+		"-v" => [ true,  "The registry value name (E.g. Stuff)."                   ],
+		"-r" => [ true,  "The remote machine name to connect to (with current process credentials" ],
+		"-w" => [ false,  "Set KEY_WOW64 flag, valid values [32|64]."               ])
 
 	#
 	# List of supported commands.
@@ -271,10 +273,12 @@ class Console::CommandDispatcher::Stdapi::Sys
 		end
 
 		# Initiailze vars
-		key   = nil
-		value = nil
-		data  = nil
-		type  = nil
+		key     = nil
+		value   = nil
+		data    = nil
+		type    = nil
+		wowflag = 0x0000
+		rem     = nil
 
 		@@reg_opts.parse(args) { |opt, idx, val|
 			case opt
@@ -290,7 +294,7 @@ class Console::CommandDispatcher::Stdapi::Sys
 						"    queryclass Queries the class of the supplied key [-k <key>]\n" +
 						"    setval     Set a registry value [-k <key> -v <val> -d <data>]\n" +
 						"    deleteval  Delete the supplied registry value [-k <key> -v <val>]\n" +
-						"    queryval   Queries the data contents of a value [-k <key> -v <val>]\n\n")
+						"    queryval   Queries the data contents of a value [-k <key> -v <val>]\n\n") 
 					return false
 				when "-k"
 					key   = val
@@ -300,6 +304,14 @@ class Console::CommandDispatcher::Stdapi::Sys
 					type  = val
 				when "-d"
 					data  = val
+				when "-r"
+					rem  = val
+				when "-w"
+					if val == '64'
+						wowflag = KEY_WOW64_64KEY
+					elsif val == '32'
+						wowflag = KEY_WOW64_32KEY
+					end
 			end
 		}
 
@@ -316,7 +328,16 @@ class Console::CommandDispatcher::Stdapi::Sys
 			# Rock it
 			case cmd
 				when "enumkey"
-					open_key = client.sys.registry.open_key(root_key, base_key)
+				
+					open_key = nil
+					if not rem
+						open_key = client.sys.registry.open_key(root_key, base_key, KEY_READ + wowflag)
+					else
+						remote_key = client.sys.registry.open_remote_key(rem, root_key)
+						if remote_key
+							open_key = remote_key.open_key(base_key, KEY_READ + wowflag)
+						end
+					end
 
 					print_line(
 						"Enumerating: #{key}\n")
@@ -349,12 +370,29 @@ class Console::CommandDispatcher::Stdapi::Sys
 					end
 
 				when "createkey"
-					open_key = client.sys.registry.create_key(root_key, base_key)
+					open_key = nil
+					if not rem
+						open_key = client.sys.registry.create_key(root_key, base_key, KEY_WRITE + wowflag)
+					else
+						remote_key = client.sys.registry.open_remote_key(rem, root_key)
+						if remote_key
+							open_key = remote_key.create_key(base_key, KEY_WRITE + wowflag)
+						end
+					end				
 
 					print_line("Successfully created key: #{key}")
 
 				when "deletekey"
-					client.sys.registry.delete_key(root_key, base_key)
+					open_key = nil
+					if not rem
+						open_key = client.sys.registry.open_key(root_key, base_key, KEY_WRITE + wowflag)
+					else
+						remote_key = client.sys.registry.open_remote_key(rem, root_key)
+						if remote_key
+							open_key = remote_key.open_key(base_key, KEY_WRITE + wowflag)
+						end
+					end
+					open_key.delete_key(base_key)
 
 					print_line("Successfully deleted key: #{key}")
 
@@ -366,7 +404,15 @@ class Console::CommandDispatcher::Stdapi::Sys
 
 					type = "REG_SZ" if (type == nil)
 
-					open_key = client.sys.registry.open_key(root_key, base_key, KEY_WRITE)
+					open_key = nil
+					if not rem
+						open_key = client.sys.registry.open_key(root_key, base_key, KEY_WRITE + wowflag)
+					else
+						remote_key = client.sys.registry.open_remote_key(rem, root_key)
+						if remote_key
+							open_key = remote_key.open_key(base_key, KEY_WRITE + wowflag)
+						end
+					end
 
 					open_key.set_value(value, client.sys.registry.type2str(type), data)
 
@@ -378,7 +424,15 @@ class Console::CommandDispatcher::Stdapi::Sys
 						return false
 					end
 
-					open_key = client.sys.registry.open_key(root_key, base_key, KEY_WRITE)
+					open_key = nil
+					if not rem
+						open_key = client.sys.registry.open_key(root_key, base_key, KEY_WRITE + wowflag)
+					else
+						remote_key = client.sys.registry.open_remote_key(rem, root_key)
+						if remote_key
+							open_key = remote_key.open_key(base_key, KEY_WRITE + wowflag)
+						end
+					end
 
 					open_key.delete_value(value)
 
@@ -390,7 +444,15 @@ class Console::CommandDispatcher::Stdapi::Sys
 						return false
 					end
 
-					open_key = client.sys.registry.open_key(root_key, base_key, KEY_READ)
+					open_key = nil
+					if not rem
+						open_key = client.sys.registry.open_key(root_key, base_key, KEY_READ + wowflag)
+					else
+						remote_key = client.sys.registry.open_remote_key(rem, root_key)
+						if remote_key
+							open_key = remote_key.open_key(base_key, KEY_READ + wowflag)
+						end
+					end
 
 					v = open_key.query_value(value)
 
@@ -401,7 +463,15 @@ class Console::CommandDispatcher::Stdapi::Sys
 						"Data: #{v.data}\n")
 
 				when "queryclass"
-					open_key = client.sys.registry.open_key(root_key, base_key, KEY_READ)
+					open_key = nil
+					if not rem
+						open_key = client.sys.registry.open_key(root_key, base_key, KEY_READ + wowflag)
+					else
+						remote_key = client.sys.registry.open_remote_key(rem, root_key)
+						if remote_key
+							open_key = remote_key.open_key(base_key, KEY_READ + wowflag)
+						end
+					end
 
 					data = open_key.query_class
 
