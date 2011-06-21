@@ -90,5 +90,5 @@ task :update do
 	system "git push &> /dev/null"
 	
 	#Twitter tweet for the update, I am that lazy yes.
-	puts "Updated librex to v#{version} based on SVN Revision: #{rev[1]} of the Metasploit rex library. Available in rubygems."
+	puts "Updated librex to v#{version} based on SVN Revision: #{rev[1]} of the #metasploit rex library. Available in rubygems."
 end
