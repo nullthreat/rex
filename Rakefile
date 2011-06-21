@@ -42,7 +42,7 @@ task :update do
 	
 	version = ""
 	
-	print "[*] Updating librex.gemspec with new Version and Revision Number"
+	print "[*] Updating librex.gemspec with new Version and Revision Number v"
 	File.open("librex.gemspec.1", "w+") do |output|
 		File.open("librex.gemspec", "r") do |input|
 			while (line = input.gets)
@@ -90,5 +90,5 @@ task :update do
 	system "git push &> /dev/null"
 	
 	#Twitter tweet for the update, I am that lazy yes.
-	puts "Updated librex to v#{version} based on SVN Revision: #{rev[1]} of the #metasploit rex library. Available in rubygems."
+	puts "[*] Updated librex to v#{version} based on SVN Revision: #{rev[1]} of the #metasploit rex library. Available in rubygems."
 end
