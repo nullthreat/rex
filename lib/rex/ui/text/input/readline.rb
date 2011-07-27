@@ -18,8 +18,6 @@ begin
 		# Initializes the readline-aware Input instance for text.
 		#
 		def initialize(tab_complete_proc = nil)
-		
-		
 			if(not Object.const_defined?('Readline'))
 				begin 
 					require 'readline'
@@ -79,13 +77,14 @@ begin
 		# down other background threads. This is important when there are many active
 		# background jobs, such as when the user is running Karmetasploit
 		#
-		def pgets
+		def pgets()
 		
 			line = nil
 			orig = Thread.current.priority
 			
 			begin
 				Thread.current.priority = -20
+
 				output.prompting
 				line = ::Readline.readline(prompt, true)
 				::Readline::HISTORY.pop if (line and line.empty?)

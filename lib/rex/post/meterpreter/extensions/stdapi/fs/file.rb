@@ -23,16 +23,38 @@ module Fs
 ###
 class File < Rex::Post::Meterpreter::Extensions::Stdapi::Fs::IO
 
-	#
-	# This should be replaced with a platform-specific value.
-	#
-	SEPARATOR = "\\"
-	Separator = "\\"
-
 	include Rex::Post::File
 
 	class << self
 		attr_accessor :client
+	end
+
+	#
+	# Return the directory separator, i.e.: "/" on unix, "\\" on windows
+	#
+	def File.separator()
+		# The separator won't change, so cache it to prevent sending
+		# unnecessary requests.
+		return @separator if @separator
+
+		request = Packet.create_request('stdapi_fs_separator')
+
+		# Fall back to the old behavior of always assuming windows.  This
+		# allows meterpreter executables built before the addition of this
+		# command to continue functioning.
+		begin
+			response = client.send_request(request)
+			@separator = response.get_tlv_value(TLV_TYPE_STRING)
+		rescue RequestError
+			@separator = "\\"
+		end
+
+		return @separator
+	end
+
+	class << self
+		alias :Separator :separator
+		alias :SEPARATOR :separator
 	end
 
 	#
@@ -44,7 +66,7 @@ class File < Rex::Post::Meterpreter::Extensions::Stdapi::Fs::IO
 
 		request = Packet.create_request( 'stdapi_fs_search' )
 
-		root = Rex::Text.unicode_filter_decode(root) if root
+		root = client.unicode_filter_decode(root) if root
 		root = root.chomp( '\\' ) if root
 
 		request.add_tlv( TLV_TYPE_SEARCH_ROOT, root )
@@ -57,8 +79,8 @@ class File < Rex::Post::Meterpreter::Extensions::Stdapi::Fs::IO
 		if( response.result == 0 )
 			response.each( TLV_TYPE_SEARCH_RESULTS ) do | results |
 				files << {
-					'path' => Rex::Text.unicode_filter_encode( results.get_tlv_value( TLV_TYPE_FILE_PATH ).chomp( '\\' ) ),
-					'name' => Rex::Text.unicode_filter_encode( results.get_tlv_value( TLV_TYPE_FILE_NAME ) ),
+					'path' => client.unicode_filter_encode( results.get_tlv_value( TLV_TYPE_FILE_PATH ).chomp( '\\' ) ),
+					'name' => client.unicode_filter_encode( results.get_tlv_value( TLV_TYPE_FILE_NAME ) ),
 					'size' => results.get_tlv_value( TLV_TYPE_FILE_SIZE )
 				}
 			end
@@ -88,11 +110,11 @@ class File < Rex::Post::Meterpreter::Extensions::Stdapi::Fs::IO
 	def File.expand_path(path)
 		request = Packet.create_request('stdapi_fs_file_expand_path')
 
-		request.add_tlv(TLV_TYPE_FILE_PATH, Rex::Text.unicode_filter_decode( path ))
+		request.add_tlv(TLV_TYPE_FILE_PATH, client.unicode_filter_decode( path ))
 
 		response = client.send_request(request)
 
-		return Rex::Text.unicode_filter_encode( response.get_tlv_value(TLV_TYPE_FILE_PATH) )
+		return client.unicode_filter_encode( response.get_tlv_value(TLV_TYPE_FILE_PATH) )
 	end
 
 
@@ -102,7 +124,7 @@ class File < Rex::Post::Meterpreter::Extensions::Stdapi::Fs::IO
 	def File.md5(path)
 		request = Packet.create_request('stdapi_fs_md5')
 
-		request.add_tlv(TLV_TYPE_FILE_PATH, Rex::Text.unicode_filter_decode( path ))
+		request.add_tlv(TLV_TYPE_FILE_PATH, client.unicode_filter_decode( path ))
 
 		response = client.send_request(request)
 
@@ -116,7 +138,7 @@ class File < Rex::Post::Meterpreter::Extensions::Stdapi::Fs::IO
 	def File.sha1(path)
 		request = Packet.create_request('stdapi_fs_sha1')
 
-		request.add_tlv(TLV_TYPE_FILE_PATH, Rex::Text.unicode_filter_decode( path ))
+		request.add_tlv(TLV_TYPE_FILE_PATH, client.unicode_filter_decode( path ))
 
 		response = client.send_request(request)
 
@@ -145,7 +167,7 @@ class File < Rex::Post::Meterpreter::Extensions::Stdapi::Fs::IO
 	def File.rm(name)
 		request = Packet.create_request('stdapi_fs_delete_file')
 
-		request.add_tlv(TLV_TYPE_FILE_PATH, Rex::Text.unicode_filter_decode( name ))
+		request.add_tlv(TLV_TYPE_FILE_PATH, client.unicode_filter_decode( name ))
 
 		response = client.send_request(request)
 
@@ -168,8 +190,8 @@ class File < Rex::Post::Meterpreter::Extensions::Stdapi::Fs::IO
 			dest = destination
 
 			stat.call('uploading', src, dest) if (stat)
-			if (File.basename(destination) != ::File.basename(src))
-				dest += File::SEPARATOR + ::File.basename(src)
+			if (self.basename(destination) != ::File.basename(src))
+				dest += self.separator + ::File.basename(src)
 			end
 
 			upload_file(dest, src)

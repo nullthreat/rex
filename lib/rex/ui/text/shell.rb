@@ -21,7 +21,8 @@ module Shell
 	module InputShell
 		attr_accessor :prompt, :output
 
-		def pgets
+		def pgets()
+
 			output.print(prompt)
 			output.flush
 
@@ -36,7 +37,7 @@ module Shell
 	#
 	# Initializes a shell that has a prompt and can be interacted with.
 	#
-	def initialize(prompt, prompt_char = '>', histfile = nil)
+	def initialize(prompt, prompt_char = '>', histfile = nil, framework = nil)
 		# Set the stop flag to false
 		self.stop_flag      = false
 		self.disable_output = false
@@ -48,6 +49,8 @@ module Shell
 
 		self.histfile = histfile
 		self.hist_last_saved = 0
+
+		self.framework = framework
 	end
 
 	def init_tab_complete
@@ -124,7 +127,60 @@ module Shell
 				break if (self.stop_flag or self.stop_count > 1)
 
 				init_tab_complete
-				line = input.pgets
+
+				if framework
+					if input.prompt.include?("%T")
+						t = Time.now
+						if framework.datastore['PromptTimeFormat']
+							t = t.strftime(framework.datastore['PromptTimeFormat'])
+						end
+						input.prompt.gsub!(/%T/, t.to_s)
+					end
+
+					if input.prompt.include?("%H")
+						hostname = ENV['HOSTNAME']
+						if hostname.nil?
+							hostname = `hostname`.split('.')[0]
+						end
+
+						# check if hostname is still nil
+						if hostname.nil?
+							hostname = ENV['COMPUTERNAME']
+						end
+
+						if hostname.nil?
+							hostname = 'unknown'
+						end
+
+						input.prompt.gsub!(/%H/, hostname.chomp)
+					end
+
+					if input.prompt.include?("%U")
+						user = ENV['USER']
+						if user.nil?
+							user = `whoami`
+						end
+
+						# check if username is still nil
+						if user.nil?
+							user = ENV['USERNAME']
+						end
+
+						if user.nil?
+							user = 'unknown'
+						end
+
+						input.prompt.gsub!(/%U/, user.chomp)
+					end
+
+					input.prompt.gsub!(/%S/, framework.sessions.length.to_s)
+					input.prompt.gsub!(/%J/, framework.jobs.length.to_s)
+					input.prompt.gsub!(/%L/, Rex::Socket.source_address("50.50.50.50"))
+					input.prompt.gsub!(/%D/, ::Dir.getwd)
+					self.init_prompt = input.prompt
+				end
+
+				line = input.pgets()
 				log_output(input.prompt)
 
 				# If a block was passed in, pass the line to it.  If it returns true,
@@ -176,12 +232,19 @@ module Shell
 	#
 	# Change the input prompt.
 	#
-	def update_prompt(prompt = nil, new_prompt_char = nil)
+	# prompt - the actual prompt
+	# new_prompt_char the char to append to the prompt
+	# mode - append or not to append - false = append true = make a new prompt
+	def update_prompt(prompt = nil, new_prompt_char = nil, mode = false)
 		if (self.input)
-			if (prompt)
+			if prompt
 				new_prompt = self.init_prompt + ' ' + prompt + prompt_char + ' '
 			else
 				new_prompt = self.prompt || ''
+			end
+
+			if mode
+			  new_prompt = prompt + (new_prompt_char || prompt_char) + ' '
 			end
 
 			# Save the prompt before any substitutions
@@ -263,6 +326,7 @@ module Shell
 
 	attr_accessor :on_command_proc
 	attr_accessor :on_print_proc
+	attr_accessor :framework
 
 protected
 
