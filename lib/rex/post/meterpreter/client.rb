@@ -151,7 +151,8 @@ class Client
 		ctx = generate_ssl_context()
 		ssl = OpenSSL::SSL::SSLSocket.new(sock, ctx)
 
-		if not ssl.respond_to?(:accept_nonblock)
+		# Use non-blocking OpenSSL operations on Windows
+		if not ( ssl.respond_to?(:accept_nonblock) and Rex::Compat.is_windows )
 			ssl.accept
 		else
 			begin
