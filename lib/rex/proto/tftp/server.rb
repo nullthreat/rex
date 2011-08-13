@@ -1,4 +1,4 @@
-# $Id: server.rb 11636 2011-01-25 02:24:37Z hdm $
+# $Id: server.rb 13551 2011-08-12 20:26:03Z scriptjunkie $
 require 'rex/socket'
 require 'rex/proto/tftp'
 
@@ -162,7 +162,7 @@ class Server
 
 		# Read the file contents, and register it as being served once
 		data = data = ::File.open(fn, "rb") { |fd| fd.read(fd.stat.size) }
-		register_file(fname, data, true)
+		register_file(fname, data)
 
 		# Return the last file in the array
 		return self.files[-1]
