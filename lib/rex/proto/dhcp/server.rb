@@ -1,4 +1,4 @@
-# $Id: server.rb 13165 2011-07-14 02:34:25Z scriptjunkie $
+# $Id: server.rb 13577 2011-08-18 00:18:43Z scriptjunkie $
 
 require 'rex/socket'
 require 'rex/proto/dhcp'
@@ -228,7 +228,7 @@ protected
 			spot = spot + optionLen + 2
 			if optionType == 53
 				messageType = optionValue.unpack("C").first
-			elsif optionType == 150
+			elsif optionType == 150 or (optionType == 60 and optionValue.include? "PXEClient")
 				pxeclient = true
 			end
 		end
